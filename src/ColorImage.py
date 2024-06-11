@@ -1,3 +1,5 @@
+import os.path
+
 from PIL import Image, ImageDraw
 
 def generate_image_from_rgb_matrix(rgb_matrix, box_size=100, output_path='color.png'):
@@ -10,6 +12,9 @@ def generate_image_from_rgb_matrix(rgb_matrix, box_size=100, output_path='color.
     - output_path (str): The path to save the generated image. Default is 'color.png'
     """
     n = len(rgb_matrix)
+
+    if os.path.exists(output_path):
+        os.remove(output_path)
 
     # Create a new image
     image_size = n * box_size
@@ -39,7 +44,7 @@ def convert_image_to_rgb_matrix(file: str, size:int) -> list[list[tuple[int, int
     - list of list of tuples: nxn matrix containing RGB tuples
     """
     image = Image.open(file)
-    image = image.convert('RGB')
+    image = image.convert('HSV')
     n = image.width // size
     rgb_matrix = [[image.getpixel((j * size, i * size)) for j in range(n)] for i in range(n)]
     return rgb_matrix
@@ -65,9 +70,9 @@ def is_same_matrix(matrix1, matrix2):
 
 
 # Example of use
-'''rgb_matrix = [
-    [(255, 0, 0), (255, 60, 0), (255, 120, 10), (255, 206, 12)],
-    [(255, 0, 255), (0, 255, 255), (255, 255, 255), (128, 128, 128)],
-    [(128, 0, 0), (0, 128, 0), (0, 0, 128), (128, 128, 0)],
-    [(0, 128, 128), (128, 0, 128), (192, 192, 192), (64, 64, 64)]
-]'''
+# rgb_matrix = [
+#     [(255, 0, 0), (255, 60, 0), (255, 120, 10), (255, 206, 12)],
+#     [(255, 0, 255), (0, 255, 255), (255, 255, 255), (255, 128, 128)],
+#     [(128, 0, 0), (0, 128, 0), (0, 0, 128), (128, 128, 0)],
+#     [(0, 128, 128), (128, 0, 128), (192, 192, 192), (3, 227, 252)]
+# ]

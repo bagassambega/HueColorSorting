@@ -1,9 +1,14 @@
-import numpy as np
-import heapq
+import colorsys
+import math
 
-def calculate_cost(matrix, gradient_matrix):
-    return np.sum(np.abs(matrix - gradient_matrix))
+import ColorImage
+from Node import Node
 
+
+def sort_by_cost(priority_queue:list[Node]):
+    priority_queue.sort(key=lambda x: (x.cost + x.heuristic))
+    print([x.heuristic for x in priority_queue][:10])
+    return priority_queue
 
 
 def generate_successors(matrix, fixed_indices):
@@ -15,72 +20,68 @@ def generate_successors(matrix, fixed_indices):
                 continue
             for k in range(n):
                 for l in range(n):
-                    if (k, l) in fixed_indices or (i == k and j == l):
+                    if (k, l) in fixed_indices:
                         continue
-                    new_matrix = matrix.copy()
-                    new_matrix[i][j], new_matrix[k] [l] = new_matrix[k] [l], new_matrix[i] [j]
+                    new_matrix = [row.copy() for row in matrix]
+                    new_matrix[i][j], new_matrix[k][l] = new_matrix[k][l], new_matrix[i][j]
                     successors.append(new_matrix)
     return successors
 
+visited = []
+def UCS(matrix, fixed_position):
+    pq = Node(matrix, 0)
+    priority_queue:list[Node] = [pq]
 
-def ucs(matrix, fixed_indices, gradient_matrix):
-    n = matrix.shape[0]
-    initial_state = matrix.copy()
-    initial_cost = calculate_cost(matrix, gradient_matrix)
+    while len(priority_queue) > 0:
+        priority_queue = sort_by_cost(priority_queue)
+        current_node = priority_queue.pop(0)
+        current_state = current_node.data
 
-    pq = [(initial_cost, initial_state)]
-    heapq.heapify(pq)
-    visited = set()
+        if current_node.heuristic == 0:
+            return current_state
 
-    while pq:
-        cost, current_matrix = heapq.heappop(pq)
-        current_tuple = tuple(map(tuple, current_matrix))
-
-        if current_tuple in visited:
+        if current_state in visited:
             continue
-        visited.add(current_tuple)
 
-        if cost == 0:
-            return current_matrix
+        visited.append(current_state)
 
-        for successor in generate_successors(current_matrix, fixed_indices):
-            new_cost = calculate_cost(successor, gradient_matrix)
-            heapq.heappush(pq, (new_cost, successor))
+        successors = generate_successors(current_state, fixed_position)
+        for successor in successors:
+            if successor not in visited:
+                priority_queue.append(Node(successor, current_node.cost+1))
+            # if successor == target:
+            #     return successor
 
     return None
 
-if __name__ == '__main__':
+def convert_to_hsv(matrix):
+    n = len(matrix)
+    hsv_matrix = []
+    for i in range(n):
+        hsv_matrix.append([])
+        for j in range(n):
+            r, g, b = matrix[i][j]
+            h, s, v = colorsys.rgb_to_hsv(r/255, g/255, b/255)
+            hsv_matrix[i].append((h, s, v))
+    return hsv_matrix
 
-    # n = 4
+if __name__ == '__main__':
     matrix = [
-    [(255, 0, 0), (255, 60, 0), (255, 120, 10), (255, 206, 12)],
-    [(255, 0, 255), (0, 255, 255), (255, 255, 255), (128, 128, 128)],
-    [(128, 0, 0), (0, 128, 0), (0, 0, 128), (128, 128, 0)],
-    [(0, 128, 128), (128, 0, 128), (192, 192, 192), (64, 64, 64)]]
+    [(232, 150, 139), (229, 171, 134), (140, 131, 160), (94, 122, 170)],
+    [(186, 140, 150), (175, 185, 148), (84, 145, 176), (133, 153, 162)],
+    [(225, 193, 132), (180, 162, 150), (169, 207, 148), (124, 176, 164)],
+    [(222, 216, 128), (74, 167, 182), (116, 199, 169), (64, 190, 187)]]
+
+    target = [
+    [(232, 150, 139), (186, 140, 150), (140, 131, 160), (94, 122, 170)],
+    [(229, 171, 134), (180, 162, 150), (133, 153, 162), (84, 145, 176)],
+    [(225, 193, 132), (175, 185, 148), (124, 176, 164), (74, 167, 182)],
+    [(222, 216, 128), (169, 207, 148), (116, 199, 169), (64, 190, 187)]]
+
+    ColorImage.generate_image_from_rgb_matrix(target, 100, 'color.png')
+    ColorImage.generate_image_from_rgb_matrix(matrix, 100, 'start.png')
     n = len(matrix)
     fixed_indices = [(0, 0), (0, n - 1), (n - 1, 0), (n - 1, n - 1)]
-    t = generate_successors(matrix, fixed_indices)
-    for i in t:
-        print(i)
-    print(len(t))
-    # gradient_matrix = np.zeros((n, n, 3))
-    #
-    # # Define the desired gradient values
-    # gradient_matrix[0, 0] = matrix[0][0]
-    # gradient_matrix[0, n - 1] = matrix[0][n - 1]
-    # gradient_matrix[n - 1, 0] = matrix[n - 1][0]
-    # gradient_matrix[n - 1, n - 1] = matrix[n - 1][n - 1]
-    #
-    # # Fill the gradient matrix (manually, based on desired gradient)
-    # # This is an example; you might want to create a more complex gradient
-    # for i in range(n):
-    #     for j in range(n):
-    #         if (i, j) in fixed_indices:
-    #             continue
-    #         gradient_matrix[i, j] = (gradient_matrix[0, 0] * (n - i - 1) * (n - j - 1) +
-    #                                  gradient_matrix[0, n - 1] * (n - i - 1) * j +
-    #                                  gradient_matrix[n - 1, 0] * i * (n - j - 1) +
-    #                                  gradient_matrix[n - 1, n - 1] * i * j) / (n * n)
-    #
-    # sorted_matrix = ucs(matrix, fixed_indices, gradient_matrix)
-    # print(sorted_matrix)
+    print(Node.calculate_heuristic(Node(matrix, 0)))
+    temp = UCS(matrix, fixed_indices)
+    ColorImage.generate_image_from_rgb_matrix(temp, 100, 'end.png')
