@@ -1,7 +1,7 @@
 # Hue Color Sorting using Python with A* Algorithm
 
 ## Introduction
-This project is a simple implementation of the A* algorithm to sort colors by hue. The project is written in Python and uses the OpenCV library to read and write images. The A* algorithm is used to sort the colors by hue, and will create a 
+This project is a simple implementation of the A* algorithm to sort colors by hue. The project is written in Python and uses the Image library to read and write images. The A* algorithm is used to sort the colors by hue, and will create a 
 matrix of color sorted by its gradient.
 
 ## Requirements
@@ -24,3 +24,5 @@ python Generator.py ColorImage.py
 ```bash
 python Solver.py Node.py ColorImage.py
 ```
+
+NOTE: Make sure you save the size of a color box the same as generated
