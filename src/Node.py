@@ -2,10 +2,18 @@ import math
 
 
 class Node:
-    def __init__(self, data:list[list[tuple]] | None, cost:int):
+    def __init__(self, data:list[list[tuple]] | None, cost:int, parent:'Node' = None, changes:list[tuple]=None):
+        if changes is None:
+            changes = [()]
         self.data = data
         self.cost = cost
-        self.heuristic = self.calculate_heuristic()
+        if parent is not None:
+            self.heuristic = self.calculate_heuristic()
+        else:
+            self.heuristic = 99999999999999
+        self.parent = parent
+        self.changes = changes
+        self.fn = self.cost + self.heuristic
     
     @staticmethod
     def calculate_distance(color1, color2):
@@ -59,7 +67,6 @@ class Node:
                             # print("horizont order", self.data[i][j-1], self.data[i][j], order_horizontal[i])
 
         # Check the vertical gradient
-
         for i in range(n):
             startV = self.data[0][i]
             endV = self.data[n - 1][i]

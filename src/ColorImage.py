@@ -44,7 +44,7 @@ def convert_image_to_rgb_matrix(file: str, size:int) -> list[list[tuple[int, int
     - list of list of tuples: nxn matrix containing RGB tuples
     """
     image = Image.open(file)
-    image = image.convert('HSV')
+    image = image.convert('RGB')
     n = image.width // size
     rgb_matrix = [[image.getpixel((j * size, i * size)) for j in range(n)] for i in range(n)]
     return rgb_matrix
