@@ -1,4 +1,5 @@
 import ColorImage
+import time
 from Node import Node
 
 
@@ -26,8 +27,11 @@ def generate_successors(node:Node, fixed_indices) -> list[Node]:
 
 
 visited = []
-def UCS(matrix, fixed_position):
+def solve(matrix, fixed_position):
     pq = Node(matrix, 0, None, [])
+    print(pq.heuristic)
+    if pq.heuristic == 0:
+        return pq.data, []
     priority_queue:list[Node] = [pq]
 
     while len(priority_queue) > 0:
@@ -38,11 +42,9 @@ def UCS(matrix, fixed_position):
         if current_node.heuristic == 0:
             changes = []
             while current_node.parent is not None:
-                print(current_node.changes)
                 changes += current_node.changes
                 current_node = current_node.parent
             changes.reverse()
-            print(len(changes))
 
             return current_state, changes
 
@@ -60,32 +62,20 @@ def UCS(matrix, fixed_position):
 
 
 if __name__ == '__main__':
-    # t = [
-    # [(232, 150, 139), (225, 193, 132), (140, 131, 160), (94, 122, 170)],
-    # [(186, 140, 150), (175, 185, 148), (84, 145, 176), (133, 153, 162)],
-    # [(180, 162, 150), (124, 176, 164), (169, 207, 148), (229, 171, 134)],
-    # [(222, 216, 128),(116, 199, 169), (74, 167, 182), (64, 190, 187)]]
-    # ColorImage.generate_image_from_rgb_matrix(t, 100, '../test/start.png')
-    #
-    # target = [
-    # [(232, 150, 139), (186, 140, 150), (140, 131, 160), (94, 122, 170)],
-    # [(229, 171, 134), (180, 162, 150), (133, 153, 162), (84, 145, 176)],
-    # [(225, 193, 132), (175, 185, 148), (124, 176, 164), (74, 167, 182)],
-    # [(222, 216, 128), (169, 207, 148), (116, 199, 169), (64, 190, 187)]]
-
-    # ColorImage.generate_image_from_rgb_matrix(target, 100, '../test/color.png')
-    # ColorImage.generate_image_from_rgb_matrix(matrix, 100, '../test/start.png')
-    # n = len(matrix)
-    # fixed_indices = [(0, 0), (0, n - 1), (n - 1, 0), (n - 1, n - 1)]
-    # print(Node.calculate_heuristic(Node(matrix, 0)))
-    # temp = UCS(matrix, fixed_indices)
-    # ColorImage.generate_image_from_rgb_matrix(temp, 100, '../test/end.png')
-
-    matrix = ColorImage.convert_image_to_rgb_matrix('../test/start.png', 100)
+    fileInput = input("File name to be sort (the file will be relative to folder test): ")
+    matrix = ColorImage.convert_image_to_rgb_matrix(fileInput + '.png', 100)
     n = len(matrix)
     fixed_indices = [(0, 0), (0, n - 1), (n - 1, 0), (n - 1, n - 1)]
-    temp, changes = UCS(matrix, fixed_indices)
+    time_start = time.time()
+    temp, changes = solve(matrix, fixed_indices)
+    time_end = time.time()
     if temp is None:
         print("No solution found")
     else:
-        ColorImage.generate_image_from_rgb_matrix(temp, 100, '../test/end.png')
+        fileOutput = input("File name to save the sorted image (the file will be relative to folder test): ")
+        ColorImage.generate_image_from_rgb_matrix(temp, 100, fileOutput + '.png')
+        for i in range(0, len(changes), 2):
+            print(f"{changes[i]} - {changes[i+1]}")
+        print(f"Changes done in {len(changes) // 2} moves")
+        print(f"Iterated in {len(visited)}")
+    print(f"Time taken: {time_end - time_start}")

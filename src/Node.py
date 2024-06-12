@@ -7,10 +7,7 @@ class Node:
             changes = [()]
         self.data = data
         self.cost = cost
-        if parent is not None:
-            self.heuristic = self.calculate_heuristic()
-        else:
-            self.heuristic = 99999999999999
+        self.heuristic = self.calculate_heuristic()
         self.parent = parent
         self.changes = changes
         self.fn = self.cost + self.heuristic
@@ -80,6 +77,5 @@ class Node:
                         if not Node.check_order(self.data[j-1][i], self.data[j][i], order_vertical[i]):
                             wrong += 1
                             # print("vertical order", self.data[j-1][i], self.data[j][i], order_vertical[i])
-
 
         return wrong

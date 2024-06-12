@@ -2,7 +2,7 @@ import os.path
 
 from PIL import Image, ImageDraw
 
-def generate_image_from_rgb_matrix(rgb_matrix, box_size=100, output_path='color.png'):
+def generate_image_from_rgb_matrix(rgb_matrix, box_size=100, output_path='../test/color.png'):
     """
     Generate an image from a nxn RGB matrix where each box is box_size x box_size pixel box
 
@@ -30,7 +30,7 @@ def generate_image_from_rgb_matrix(rgb_matrix, box_size=100, output_path='color.
             draw.rectangle([top_left, bottom_right], fill=color)
 
     # Save the image to a file
-    image.save(output_path)
+    image.save("../test/" + output_path)
     print(f"Image saved to {output_path}")
 
 def convert_image_to_rgb_matrix(file: str, size:int) -> list[list[tuple[int, int, int]]]:
@@ -43,7 +43,7 @@ def convert_image_to_rgb_matrix(file: str, size:int) -> list[list[tuple[int, int
     Returns:
     - list of list of tuples: nxn matrix containing RGB tuples
     """
-    image = Image.open(file)
+    image = Image.open("../test/" + file)
     image = image.convert('RGB')
     n = image.width // size
     rgb_matrix = [[image.getpixel((j * size, i * size)) for j in range(n)] for i in range(n)]
