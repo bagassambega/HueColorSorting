@@ -1,5 +1,5 @@
 import random
-import ColorImage
+from src import ColorImage
 
 
 if __name__ == '__main__':

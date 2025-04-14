@@ -1,11 +1,10 @@
-import ColorImage
+from src import ColorImage
 import time
-from Node import Node
+from src.Node import Node
 
 
 def sort_by_cost(priority_queue:list[Node]):
     priority_queue.sort(key=lambda x: x.fn)
-    # print([x.heuristic for x in priority_queue][:10])
     return priority_queue
 
 

@@ -46,7 +46,6 @@ class Node:
         order_horizontal = [[self.data[j][0][i] < self.data[j][n - 1][i] for i in range(3)]for j in range(n)]
         # Order vertical for every column
         order_vertical = [[self.data[0][i][j] < self.data[n - 1][i][j] for j in range(3)]for i in range(n)]
-        # print(order_horizontal, order_vertical)
 
         # Check the horizontal gradient
         for i in range(n):
